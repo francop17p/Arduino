@@ -9,6 +9,16 @@ class ArduinoReader:
         """
         self.serial_connection = serial.Serial(port, baudrate, timeout=1)
 
+    def _to_brightness(self, value: float) -> str:
+        if value > 900:
+            return "Really Bright"
+        elif value > 800:
+            return "Bright"
+        elif 400 <= value <= 800:
+            return "Dim"
+        else:
+            return "Dark"
+
     def read_sensor_data(self):
         """
         Read data from the Arduino and parse it.
@@ -18,10 +28,11 @@ class ArduinoReader:
             line = self.serial_connection.readline().decode('utf-8').strip()
             try:
                 temperature, humidity, light = map(float, line.split(','))
+                brightness = self._to_brightness(light)
                 return {
                     'temperature': temperature,
                     'humidity': humidity,
-                    'light': light
+                    'brightness': brightness
                 }
             except ValueError:
                 print(f"Error parsing line: {line}")
