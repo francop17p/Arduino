@@ -2,5 +2,6 @@
     "serial_port": "/dev/ttyACM0",
     "baudrate": 9600,
     "mqtt_broker": "localhost",
-    "mqtt_port": 1883
+    "mqtt_port": 1883,
+    "mongodb_database":"SensorLogs"
 }
