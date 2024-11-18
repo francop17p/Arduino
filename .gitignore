@@ -1,0 +1,84 @@
+# Byte-compiled files
+*.py[cod]
+__pycache__/
+*.so
+
+# Virtual environment
+venv/
+
+# Environment variables and config files
+.env
+*.env
+
+# Logs
+*.log
+*.txt
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+*.egg-info/
+
+# Testing
+.tox/
+.nox/
+.coverage
+*.cover
+coverage.*
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.junit_cache/
+test-results.xml
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Linter and formatter cache
+.mypy_cache/
+flake8.log
+pylint.log
+
+# Profiling
+.prof
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.rej
+*.~*
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Other generated files
+*.sqlite3
+*.mo
+*.pot
+
+# Package manager files
+pip-wheel-metadata/
+poetry.lock
+poetry.toml
+Pipfile.lock
+
+# Node modules (if applicable)
+node_modules/
+
+# Build and deploy files
+*.tar.gz
+*.zip
+*.whl
+
