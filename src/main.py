@@ -1,6 +1,7 @@
 import time
 import json
-from arduino_reader import ArduinoReader
+import serial
+from arduino_reader import ArduinoReader  # Si tienes esta clase definida, no es necesario importar directamente
 from mqtt_publisher import MQTTPublisher
 from mongodb_handler import MongoDBHandler
 
@@ -10,29 +11,48 @@ def load_config(config_path='config.json'):
     with open(config_path, 'r') as file:
         return json.load(file)
 
+def read_sensor_data(serial_port):
+    try:
+        line = serial_port.readline().decode('utf-8').strip()
+        if line:
+            # Intentar cargar el JSON
+            try:
+                data = json.loads(line)
+                return data
+            except json.JSONDecodeError:
+                print("Error al analizar la línea: ", line)
+                return None
+    except Exception as e:
+        print(f"Error leyendo datos del puerto serie: {e}")
+        return None
+
 def main():
     print("Program started.")
     config = load_config()
 
-    arduino = ArduinoReader(port=config['serial_port'], baudrate=config['baudrate'])
+    # Configuración del puerto serie
+    serial_port = serial.Serial(config['serial_port'], baudrate=config['baudrate'], timeout=1)
+
     mqtt = MQTTPublisher(broker=config['mqtt_broker'], port=config['mqtt_port'])
     mongo = MongoDBHandler(database=config['mongodb_database'])
 
     try:
         while True:
-            data = arduino.read_sensor_data()
-            if data and data['object_detected'] == 1:
-                payload = {
-                    "Objeto Detectado": "1"
-                }
-                print("Objeto detectado")
-                mqtt.publish(topic=object_sensor_token, message=json.dumps(payload))
-                mongo.insert_data(collection=object_sensor_token, data=payload)
+            # Leer los datos del sensor desde el puerto serie
+            data = read_sensor_data(serial_port)
+            if data and 'ObjetoDetectado' in data:
+                if data['ObjetoDetectado'] == 1:
+                    payload = {
+                        "Objeto Detectado": "1"
+                    }
+                    print("Objeto detectado")
+                    mqtt.publish(topic=object_sensor_token, message=json.dumps(payload))
+                    mongo.insert_data(collection=object_sensor_token, data=payload)
 
     except KeyboardInterrupt:
         print("Program finished.")
     finally:
-        arduino.close()
+        serial_port.close()
         mqtt.disconnect()
 
 if __name__ == "__main__":
