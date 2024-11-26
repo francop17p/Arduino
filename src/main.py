@@ -5,7 +5,7 @@ from arduino_reader import ArduinoReader  # Si tienes esta clase definida, no es
 from mqtt_publisher import MQTTPublisher
 from mongodb_handler import MongoDBHandler
 
-object_sensor_token = "f44d63b2-6345-4ad2-a472-4d1a2b8f107d"
+object_sensor_token = "1501b86d-5899-4b8b-a6da-99ccc1b1f021"
 
 def load_config(config_path='config.json'):
     with open(config_path, 'r') as file:
