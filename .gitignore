@@ -6,10 +6,6 @@ __pycache__/
 # Virtual environment
 venv/
 
-# Environment variables and config files
-.env
-*.env
-
 # OS-specific files
 .DS_Store
 Thumbs.db
