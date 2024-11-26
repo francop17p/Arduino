@@ -3,6 +3,7 @@ import json
 import serial
 from arduino_reader import ArduinoReader
 from mqtt_publisher import MQTTPublisher
+from mongodb_handler import MongoDBHandler
 
 object_sensor_token = "1501b86d-5899-4b8b-a6da-99ccc1b1f021"
 
@@ -31,6 +32,7 @@ def main():
     serial_port = serial.Serial(config['serial_port'], baudrate=config['baudrate'], timeout=1)
 
     mqtt = MQTTPublisher(broker=config['mqtt_broker'], port=config['mqtt_port'])
+    mongo = MongoDBHandler(database=config['mongodb_database'])
 
     try:
         while True:
@@ -45,6 +47,7 @@ def main():
                         print("MQTT client not connected, attempting to reconnect...")
                         mqtt.client.reconnect()
                     mqtt.publish(topic=object_sensor_token, message=json.dumps(payload))
+                    mongo.insert_data(collection=object_sensor_token, data=payload)
 
     except KeyboardInterrupt:
         print("Program finished.")
