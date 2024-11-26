@@ -1,0 +1,7 @@
+{
+    "serial_port": "COM3",
+    "baudrate": 115200,
+    "mqtt_broker": "localhost",
+    "mqtt_port": 1883,
+    "mongodb_database":"SensorLogs"
+}

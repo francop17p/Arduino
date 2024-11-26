@@ -4,14 +4,14 @@ from arduino_reader import ArduinoReader
 from mqtt_publisher import MQTTPublisher
 from mongodb_handler import MongoDBHandler
 
-temperature_sensor_token = "17e4e62a-785d-4570-bff0-2b506338353f"
-light_sensor_token = "token-sensor2"
+object_sensor_token = "f44d63b2-6345-4ad2-a472-4d1a2b8f107d"
 
 def load_config(config_path='config.json'):
     with open(config_path, 'r') as file:
         return json.load(file)
 
 def main():
+    print("Program started.")
     config = load_config()
 
     arduino = ArduinoReader(port=config['serial_port'], baudrate=config['baudrate'])
@@ -21,20 +21,13 @@ def main():
     try:
         while True:
             data = arduino.read_sensor_data()
-            if data:
-                data_per_token = {
-                    temperature_sensor_token: {
-                        "temperature": data['temperature'],
-                        "humidity": data['humidity']
-                    },
-                    light_sensor_token: {
-                        "brightness": data['brightness']
-                    }
+            if data and data['object_detected'] == 1:
+                payload = {
+                    "Objeto Detectado": "1"
                 }
-                for token, payload in data_per_token.items():
-                    print(f"Data sent {token}: {payload}")
-                    mqtt.publish(topic=token, message=json.dumps(payload))
-                    mongo.insert_data(collection=token, data=payload)
+                print("Objeto detectado")
+                mqtt.publish(topic=object_sensor_token, message=json.dumps(payload))
+                mongo.insert_data(collection=object_sensor_token, data=payload)
 
     except KeyboardInterrupt:
         print("Program finished.")
@@ -43,4 +36,4 @@ def main():
         mqtt.disconnect()
 
 if __name__ == "__main__":
-    main();
+    main()
