@@ -1,0 +1,25 @@
+// Definir los pines
+const int sensorPin = 23;  // Pin conectado a la salida del sensor IR
+
+void setup() {
+  // Configurar el pin del sensor IR como entrada
+  pinMode(sensorPin, INPUT);
+  
+  // Inicializar comunicación serial para debug
+  Serial.begin(115200);
+  Serial.println("Esperando detección de objeto...");
+}
+
+void loop() {
+  // Leer el estado del sensor IR
+  int sensorValue = digitalRead(sensorPin);
+
+  // Si el valor es LOW, significa que se detectó un objeto
+  if (sensorValue == LOW) {
+    // Crear un payload en formato JSON con la detección del objeto
+    String payload = "{\"ObjetoDetectado\": 1}";
+    Serial.println(payload);  // Enviar el payload por el puerto serie
+  } 
+
+  delay(1000);  // Espera 1 segundo antes de volver a leer el sensor
+}
