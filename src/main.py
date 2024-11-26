@@ -1,9 +1,8 @@
 import time
 import json
 import serial
-from arduino_reader import ArduinoReader  # Si tienes esta clase definida, no es necesario importar directamente
+from arduino_reader import ArduinoReader
 from mqtt_publisher import MQTTPublisher
-from mongodb_handler import MongoDBHandler
 
 object_sensor_token = "1501b86d-5899-4b8b-a6da-99ccc1b1f021"
 
@@ -15,7 +14,6 @@ def read_sensor_data(serial_port):
     try:
         line = serial_port.readline().decode('utf-8').strip()
         if line:
-            # Intentar cargar el JSON
             try:
                 data = json.loads(line)
                 return data
@@ -30,15 +28,12 @@ def main():
     print("Program started.")
     config = load_config()
 
-    # Configuración del puerto serie
     serial_port = serial.Serial(config['serial_port'], baudrate=config['baudrate'], timeout=1)
 
     mqtt = MQTTPublisher(broker=config['mqtt_broker'], port=config['mqtt_port'])
-    mongo = MongoDBHandler(database=config['mongodb_database'])
 
     try:
         while True:
-            # Leer los datos del sensor desde el puerto serie
             data = read_sensor_data(serial_port)
             if data and 'ObjetoDetectado' in data:
                 if data['ObjetoDetectado'] == 1:
@@ -46,8 +41,10 @@ def main():
                         "Objeto Detectado": "1"
                     }
                     print("Objeto detectado")
+                    if not mqtt.client.is_connected():
+                        print("MQTT client not connected, attempting to reconnect...")
+                        mqtt.client.reconnect()
                     mqtt.publish(topic=object_sensor_token, message=json.dumps(payload))
-                    mongo.insert_data(collection=object_sensor_token, data=payload)
 
     except KeyboardInterrupt:
         print("Program finished.")
